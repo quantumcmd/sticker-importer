@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Sticker Pack — Sticker Exporter</title>
+  <style>
+    :root {
+      --bg: #0b141a;
+      --card: #111b21;
+      --green: #25D366;
+      --text: #e9edef;
+      --subtext: #8696a0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 24px;
+      padding: 32px 24px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .icon-badge {
+      font-size: 48px;
+      margin-bottom: 4px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .author {
+      font-size: 13.5px;
+      color: var(--subtext);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(37,211,102,0.15);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-top: 4px;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 16px;
+      padding: 15px 24px;
+      background: var(--green);
+      color: #000000;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 50px;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(37,211,102,0.4);
+      transition: transform 0.15s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .hint {
+      font-size: 12px;
+      color: var(--subtext);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="icon-badge">🎭</div>
+    <h2 id="pack-title" class="title">TikTok Sticker Pack</h2>
+    <p id="pack-author" class="author">By Sticker Exporter</p>
+    <div id="pack-count" class="badge">WhatsApp Ready</div>
+
+    <a id="import-btn" href="#" class="btn">
+      Add to WhatsApp 📱
+    </a>
+
+    <p class="hint">Tap <strong>"Add to WhatsApp"</strong> above to save this complete sticker pack into your WhatsApp sticker keyboard!</p>
+  </div>
+
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search || window.location.hash.substring(1));
+      const title  = params.get('name') || 'TikTok Sticker Pack';
+      const author = params.get('publisher') || params.get('author') || 'Sticker Exporter';
+      const count  = params.get('count') || '3';
+      const packId = params.get('id') || 'pack_' + Date.now();
+
+      document.getElementById('pack-title').textContent = title;
+      document.getElementById('pack-author').textContent = 'By ' + author;
+      document.getElementById('pack-count').textContent = `✓ ${count} Stickers`;
+
+      const nativeUri = `whatsapp://sticker?name=${encodeURIComponent(title)}&publisher=${encodeURIComponent(author)}&id=${encodeURIComponent(packId)}`;
+      const importBtn = document.getElementById('import-btn');
+      importBtn.href = nativeUri;
+
+      // Auto-trigger on page load for seamless 1-tap UX
+      setTimeout(() => {
+        window.location.href = nativeUri;
+      }, 400);
+    })();
+  </script>
+</body>
+</html>
