@@ -62,22 +62,37 @@
       border-radius: 99px;
       margin-top: 4px;
     }
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      margin-top: 16px;
+    }
     .btn {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       width: 100%;
-      margin-top: 16px;
       padding: 15px 24px;
       background: var(--green);
       color: #000000;
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 800;
       border-radius: 50px;
       text-decoration: none;
+      border: none;
+      cursor: pointer;
       box-shadow: 0 6px 20px rgba(37,211,102,0.4);
-      transition: transform 0.15s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-secondary {
+      background: #202c33;
+      color: var(--text);
+      box-shadow: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      font-weight: 600;
     }
     .btn:active { transform: scale(0.97); }
     .hint {
@@ -96,9 +111,14 @@
     <p id="pack-author" class="author">By Sticker Exporter</p>
     <div id="pack-count" class="badge">WhatsApp Ready</div>
 
-    <a id="import-btn" href="#" class="btn">
-      Add to WhatsApp 📱
-    </a>
+    <div class="btn-group">
+      <button id="import-btn" class="btn">
+        Add to WhatsApp 📱
+      </button>
+      <button id="import-w4b-btn" class="btn btn-secondary">
+        Add to WhatsApp Business 🏢
+      </button>
+    </div>
 
     <p class="hint">Tap <strong>"Add to WhatsApp"</strong> above to save this complete sticker pack into your WhatsApp sticker keyboard!</p>
   </div>
@@ -115,14 +135,43 @@
       document.getElementById('pack-author').textContent = 'By ' + author;
       document.getElementById('pack-count').textContent = `✓ ${count} Stickers`;
 
-      const nativeUri = `whatsapp://sticker?name=${encodeURIComponent(title)}&publisher=${encodeURIComponent(author)}&id=${encodeURIComponent(packId)}`;
-      const importBtn = document.getElementById('import-btn');
-      importBtn.href = nativeUri;
+      const safeTitle  = encodeURIComponent(title);
+      const safeAuthor = encodeURIComponent(author);
+      const safeId     = encodeURIComponent(packId);
 
-      // Auto-trigger on page load for seamless 1-tap UX
+      const importBtn    = document.getElementById('import-btn');
+      const importW4bBtn = document.getElementById('import-w4b-btn');
+
+      function launchWhatsApp(packageApp = 'com.whatsapp') {
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isIOS     = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isAndroid) {
+          // Android Intent (Triggers WhatsApp package directly)
+          window.location.href = `intent://sticker?name=${safeTitle}&publisher=${safeAuthor}&id=${safeId}#Intent;scheme=whatsapp;package=${packageApp};end;`;
+        } else if (isIOS) {
+          // iOS Safari Custom Scheme
+          window.location.href = `whatsapp://sticker?name=${safeTitle}&publisher=${safeAuthor}&id=${safeId}`;
+        } else {
+          // General Fallback
+          window.location.href = `whatsapp://sticker?name=${safeTitle}&publisher=${safeAuthor}&id=${safeId}`;
+        }
+      }
+
+      importBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        launchWhatsApp('com.whatsapp');
+      });
+
+      importW4bBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        launchWhatsApp('com.whatsapp.w4b');
+      });
+
+      // Auto-trigger on page load
       setTimeout(() => {
-        window.location.href = nativeUri;
-      }, 400);
+        launchWhatsApp('com.whatsapp');
+      }, 500);
     })();
   </script>
 </body>
